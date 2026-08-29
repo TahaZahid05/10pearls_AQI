@@ -142,12 +142,12 @@ Four model families were trained and evaluated on an 80/20 chronological time-se
 
 ### Evaluation Results Table
 
-| Model Family | Overall MAE | Overall RMSE | Day 1 (+24h) RMSE | Day 1 (+24h) R² | Day 2 (+48h) RMSE | Day 3 (+72h) RMSE |
+| Model Family | Overall MAE | Overall RMSE | Day 1 (+24h) MAE / RMSE | Day 1 R² | Day 2 (+48h) MAE / RMSE | Day 3 (+72h) MAE / RMSE |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **LightGBM** | **4.89** | **6.58** | **5.11** | **0.455** | **6.81** | **7.58** |
-| **Random Forest** | 5.00 | 6.66 | 5.31 | 0.413 | 6.97 | 7.50 |
-| **Ridge Regression** | 5.55 | 7.10 | 5.62 | 0.342 | 7.43 | 8.02 |
-| **Neural Network (MLP)** | 9.03 | 11.55 | 7.93 | -0.311 | 11.05 | 14.68 |
+| **LightGBM** | **4.89** | **6.58** | **3.93** / **5.11** | **0.455** | **5.06** / **6.81** | **5.68** / **7.58** |
+| **Random Forest** | 5.00 | 6.66 | 4.06 / 5.31 | 0.413 | 5.31 / 6.97 | 5.62 / 7.50 |
+| **Ridge Regression** | 5.55 | 7.10 | 4.41 / 5.62 | 0.342 | 5.95 / 7.43 | 6.30 / 8.02 |
+| **Neural Network (MLP)** | 9.03 | 11.55 | 6.28 / 7.93 | -0.311 | 9.05 / 11.05 | 11.76 / 14.68 |
 
 ### Key Findings:
 * **LightGBM is the winning model**, achieving the lowest error across all metrics (Overall MAE = 4.89 AQI points, Day 1 RMSE = 5.11).
