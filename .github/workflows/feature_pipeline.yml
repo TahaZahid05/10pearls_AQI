@@ -8,6 +8,8 @@ on:
 jobs:
   feature-pipeline:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Check out repository
@@ -27,3 +29,11 @@ jobs:
       - name: Run feature pipeline & backfill
         run: |
           python -m src.backfill
+
+      - name: Commit and push updated dataset
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/historical_features.parquet
+          git commit -m "Auto-update features dataset [skip ci]" || echo "No changes to commit"
+          git push
