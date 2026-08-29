@@ -17,10 +17,13 @@ from src.feature_engineering import (
 
 def run_backfill(
     start_date: str = "2025-08-01",
-    end_date: str = "2026-08-28",
+    end_date: str | None = None,
     save_parquet: bool = True,
     save_csv: bool = True,
 ) -> pd.DataFrame:
+    if end_date is None:
+        end_date = datetime.now().strftime("%Y-%m-%d")
+
     print(f"Fetching historical data for {CITY_NAME} ({start_date} to {end_date})...")
     df_raw = fetch_combined_data(
         latitude=LATITUDE,
