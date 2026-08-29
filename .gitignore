@@ -1,0 +1,35 @@
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Environment Variables & Secrets
+.env
+*.pem
+*.key
+
+# IDEs and OS Files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+scratch/
+
+# Hopsworks / ML local cache & models
+models/*.pkl
+models/*.joblib
+.hopsworks/
+*.log
+
+# Data (Keep parquet/csv optional or track via pipeline)
+data/*.csv
+data/*.parquet
+!data/.gitkeep
