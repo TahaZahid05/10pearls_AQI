@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -52,6 +53,11 @@ def load_live_data():
 @st.cache_resource
 def load_model_bundle():
     try:
+        if hasattr(st, "secrets") and "DAGSHUB_USER_TOKEN" in st.secrets:
+            os.environ["DAGSHUB_USER_TOKEN"] = str(st.secrets["DAGSHUB_USER_TOKEN"])
+            os.environ["MLFLOW_TRACKING_USERNAME"] = DAGSHUB_OWNER
+            os.environ["MLFLOW_TRACKING_PASSWORD"] = str(st.secrets["DAGSHUB_USER_TOKEN"])
+
         dagshub.init(repo_owner=DAGSHUB_OWNER, repo_name=DAGSHUB_REPO, mlflow=True)
         client = mlflow.tracking.MlflowClient()
         reg_model = client.get_registered_model(MODEL_REGISTRY_NAME)
