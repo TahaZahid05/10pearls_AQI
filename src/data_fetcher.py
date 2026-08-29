@@ -22,7 +22,6 @@ def fetch_air_quality(
     past_days: Optional[int] = None,
     forecast_days: int = 1,
 ) -> pd.DataFrame:
-    """Fetch hourly air quality data from Open-Meteo Air Quality API."""
     params = {
         "latitude": latitude,
         "longitude": longitude,
@@ -46,8 +45,7 @@ def fetch_air_quality(
     if "hourly" not in data:
         raise ValueError(f"No hourly data found in response: {data}")
 
-    df = pd.DataFrame(data["hourly"])
-    return df
+    return pd.DataFrame(data["hourly"])
 
 
 def fetch_weather(
@@ -58,7 +56,6 @@ def fetch_weather(
     past_days: Optional[int] = None,
     forecast_days: int = 1,
 ) -> pd.DataFrame:
-    """Fetch hourly weather data from Open-Meteo Weather API."""
     params = {
         "latitude": latitude,
         "longitude": longitude,
@@ -83,8 +80,7 @@ def fetch_weather(
     if "hourly" not in data:
         raise ValueError(f"No hourly data found in response: {data}")
 
-    df = pd.DataFrame(data["hourly"])
-    return df
+    return pd.DataFrame(data["hourly"])
 
 
 def fetch_combined_data(
@@ -95,7 +91,6 @@ def fetch_combined_data(
     past_days: Optional[int] = None,
     forecast_days: int = 1,
 ) -> pd.DataFrame:
-    """Fetch and merge air quality and weather data on timestamp."""
     df_aq = fetch_air_quality(
         latitude=latitude,
         longitude=longitude,
@@ -114,16 +109,13 @@ def fetch_combined_data(
         forecast_days=forecast_days,
     )
 
-    # Merge on the shared 'time' column
     df = pd.merge(df_aq, df_weather, on="time", how="inner")
     df["time"] = pd.to_datetime(df["time"])
     df["city"] = CITY_NAME
-    df = df.sort_values("time").reset_index(drop=True)
-
-    return df
+    return df.sort_values("time").reset_index(drop=True)
 
 
-print(f"Testing real-time / recent data fetch for {CITY_NAME}...")
-df_test = fetch_combined_data(past_days=7, forecast_days=1)
-print(f"Successfully fetched {len(df_test)} rows and {len(df_test.columns)} columns:")
-print(df_test.head(3))
+if __name__ == "__main__":
+    df_test = fetch_combined_data(past_days=7, forecast_days=1)
+    print(f"Fetched {len(df_test)} rows, {len(df_test.columns)} columns")
+    print(df_test.head(3))

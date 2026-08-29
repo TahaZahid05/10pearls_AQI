@@ -13,6 +13,9 @@ __pycache__/
 
 # Environment Variables & Secrets
 .env
+api_key.txt
+gcp_key.json
+*credentials*.json
 *.pem
 *.key
 

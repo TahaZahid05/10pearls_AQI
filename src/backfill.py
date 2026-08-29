@@ -21,48 +21,32 @@ def run_backfill(
     save_parquet: bool = True,
     save_csv: bool = True,
 ) -> pd.DataFrame:
-    """
-    Backfills historical data for the given date range, transforms it, and saves to disk.
-    """
-    print(f"==================================================")
-    print(f"Starting Historical Backfill for {CITY_NAME}")
-    print(f"Coordinates: ({LATITUDE}, {LONGITUDE})")
-    print(f"Date Range: {start_date} -> {end_date}")
-    print(f"==================================================")
-
-    # 1. Fetch raw data from Open-Meteo in a single query
-    print("Fetching air quality and weather data from Open-Meteo.")
+    print(f"Fetching historical data for {CITY_NAME} ({start_date} to {end_date})...")
     df_raw = fetch_combined_data(
         latitude=LATITUDE,
         longitude=LONGITUDE,
         start_date=start_date,
         end_date=end_date,
     )
-    print(f"Raw Data Fetched: {len(df_raw)} hourly records across {len(df_raw.columns)} columns.")
+    print(f"Fetched {len(df_raw)} raw records")
 
-    # 2. Engineer features & targets
-    print("Applying feature engineering (time, cyclical, wind vectors, lags, rolling stats, 3-day targets)...")
+    print("Computing features...")
     df_features = engineer_features(df_raw, is_training=True)
-    print(f"Feature Engineering Complete: {len(df_features)} clean rows, {len(df_features.columns)} total columns.")
+    print(f"Features ready: {len(df_features)} rows, {len(df_features.columns)} columns")
 
     feature_cols, target_cols = get_feature_and_target_columns(df_features)
-    print(f"Features count (X): {len(feature_cols)}")
-    print(f"Targets count (y): {len(target_cols)} ({', '.join(target_cols)})")
+    print(f"Features: {len(feature_cols)}, Targets: {len(target_cols)}")
 
-    # 3. Save to disk
     if save_parquet:
         df_features.to_parquet(HISTORICAL_PARQUET, index=False)
-        print(f"Saved Parquet dataset to: {HISTORICAL_PARQUET}")
+        print(f"Saved to {HISTORICAL_PARQUET}")
 
     if save_csv:
         df_features.to_csv(HISTORICAL_CSV, index=False)
-        print(f"Saved CSV dataset to: {HISTORICAL_CSV}")
-
-    # 4. Summary metrics
-    print("\n--- Summary Statistics of Target Variables ---")
-    print(df_features[target_cols].describe().round(2))
+        print(f"Saved to {HISTORICAL_CSV}")
 
     return df_features
 
 
-df = run_backfill()
+if __name__ == "__main__":
+    run_backfill()
