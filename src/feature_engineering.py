@@ -20,6 +20,10 @@ def add_time_features(df: pd.DataFrame) -> pd.DataFrame:
     df["sin_hour"] = np.sin(2 * np.pi * df["hour"] / 24.0)
     df["cos_hour"] = np.cos(2 * np.pi * df["hour"] / 24.0)
 
+    # Cyclical day of week encoding
+    df["sin_day_of_week"] = np.sin(2 * np.pi * df["day_of_week"] / 7.0)
+    df["cos_day_of_week"] = np.cos(2 * np.pi * df["day_of_week"] / 7.0)
+
     # Cyclical month encoding
     df["sin_month"] = np.sin(2 * np.pi * df["month"] / 12.0)
     df["cos_month"] = np.cos(2 * np.pi * df["month"] / 12.0)

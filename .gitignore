@@ -26,8 +26,9 @@ gcp_key.json
 *.swp
 scratch/
 
-# Hopsworks / ML local cache & models
+# ML local cache & models
 models/*.pkl
+!models/best_model.pkl
 models/*.joblib
 .hopsworks/
 *.log
