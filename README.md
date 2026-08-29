@@ -41,6 +41,7 @@ flowchart TD
 
 ## 2. Key Project Resources
 
+* **Live Web Application**: [https://karachi-aqi-forecast-taha.streamlit.app/](https://karachi-aqi-forecast-taha.streamlit.app/)
 * **DagsHub MLflow Tracking**: [https://dagshub.com/TahaZahid05/10pearls_AQI.mlflow](https://dagshub.com/TahaZahid05/10pearls_AQI.mlflow)
 * **DagsHub Model Registry**: [https://dagshub.com/TahaZahid05/10pearls_AQI.mlflow/#/models/AQI_Predictor_Model](https://dagshub.com/TahaZahid05/10pearls_AQI.mlflow/#/models/AQI_Predictor_Model)
 * **Target Coordinates**: Karachi, Pakistan (`Latitude: 24.8609`, `Longitude: 66.9905`, `Timezone: Asia/Karachi`)
@@ -194,7 +195,7 @@ The system is fully automated using GitHub Actions workflows:
 
 ## 8. Web Application Dashboard
 
-The interactive web dashboard ([`app/streamlit_app.py`](app/streamlit_app.py)) is deployed on Streamlit Community Cloud:
+The interactive web dashboard ([`app/streamlit_app.py`](app/streamlit_app.py)) is deployed live at **[https://karachi-aqi-forecast-taha.streamlit.app/](https://karachi-aqi-forecast-taha.streamlit.app/)**:
 
 * **Dynamic Model Loading**: Connects to DagsHub Model Registry over HTTPS to pull the latest production model version (`v5`) on startup, with local fallback.
 * **Real-time Observations**: Queries Open-Meteo on-demand (with 30-minute caching) to display current Karachi AQI and weather parameters.
