@@ -30,7 +30,14 @@ MODEL_REGISTRY_NAME = "AQI_Predictor_Model"
 
 
 def init_mlflow():
-    dagshub.init(repo_owner=DAGSHUB_OWNER, repo_name=DAGSHUB_REPO, mlflow=True)
+    token = os.environ.get("DAGSHUB_USER_TOKEN")
+    if token:
+        os.environ["MLFLOW_TRACKING_USERNAME"] = DAGSHUB_OWNER
+        os.environ["MLFLOW_TRACKING_PASSWORD"] = token
+
+    tracking_uri = f"https://dagshub.com/{DAGSHUB_OWNER}/{DAGSHUB_REPO}.mlflow"
+    os.environ["MLFLOW_TRACKING_URI"] = tracking_uri
+    mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment("AQI_3Day_Forecasting")
 
 

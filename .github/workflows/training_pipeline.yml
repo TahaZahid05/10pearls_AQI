@@ -27,6 +27,8 @@ jobs:
       - name: Train, Evaluate, and Register Model to DagsHub MLflow
         env:
           DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_USER_TOKEN }}
+          MLFLOW_TRACKING_USERNAME: ${{ github.repository_owner }}
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_USER_TOKEN }}
         run: |
           python -m src.train
 
