@@ -26,14 +26,10 @@ gcp_key.json
 *.swp
 scratch/
 
-# ML local cache & models
-models/*.pkl
-!models/best_model.pkl
+# ML local cache & logs
 models/*.joblib
 .hopsworks/
 *.log
 
-# Data (Keep parquet/csv optional or track via pipeline)
+# Data
 data/*.csv
-data/*.parquet
-!data/.gitkeep
