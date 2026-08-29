@@ -5,7 +5,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
+import dagshub
 import joblib
+import mlflow
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -14,6 +16,10 @@ import streamlit as st
 from src.config import CITY_NAME, FORECAST_HORIZONS
 from src.data_fetcher import fetch_combined_data
 from src.feature_engineering import engineer_features
+
+DAGSHUB_OWNER = "TahaZahid05"
+DAGSHUB_REPO = "10pearls_AQI"
+MODEL_REGISTRY_NAME = "AQI_Predictor_Model"
 
 st.set_page_config(
     page_title=f"{CITY_NAME} Air Quality Forecast",
@@ -45,10 +51,24 @@ def load_live_data():
 
 @st.cache_resource
 def load_model_bundle():
-    model_path = BASE_DIR / "models" / "best_model.pkl"
-    if not model_path.exists():
-        return None
-    return joblib.load(model_path)
+    try:
+        dagshub.init(repo_owner=DAGSHUB_OWNER, repo_name=DAGSHUB_REPO, mlflow=True)
+        client = mlflow.tracking.MlflowClient()
+        reg_model = client.get_registered_model(MODEL_REGISTRY_NAME)
+        latest_version = reg_model.latest_versions[-1]
+        artifact_path = mlflow.artifacts.download_artifacts(
+            run_id=latest_version.run_id, artifact_path="model/best_model.pkl"
+        )
+        bundle = joblib.load(artifact_path)
+        bundle["source"] = f"DagsHub Model Registry (v{latest_version.version})"
+        return bundle
+    except Exception:
+        local_path = BASE_DIR / "models" / "best_model.pkl"
+        if local_path.exists():
+            bundle = joblib.load(local_path)
+            bundle["source"] = "Local Artifact (models/best_model.pkl)"
+            return bundle
+    return None
 
 
 def run_inference(bundle, df_features):
@@ -71,13 +91,13 @@ def run_inference(bundle, df_features):
 
 
 def main():
-    st.title(f"{CITY_NAME} Air Quality Index (AQI) - 3-Day Forecast")
-    st.caption("Real-time meteorological & pollutant analysis powered by LightGBM")
-
     bundle = load_model_bundle()
     if bundle is None:
-        st.error("Model artifact not found in models/best_model.pkl. Please run model training first.")
+        st.error("Model artifact not found in DagsHub Model Store or local cache.")
         return
+
+    st.title(f"{CITY_NAME} Air Quality Index (AQI) - 3-Day Forecast")
+    st.caption(f"Real-time forecasting powered by LightGBM • Loaded from {bundle.get('source', 'Model Store')}")
 
     with st.spinner("Fetching latest live data for Karachi..."):
         df_raw, df_features = load_live_data()
