@@ -49,40 +49,55 @@ flowchart TD
 
 ## 3. Exploratory Data Analysis (EDA)
 
-The dataset contains 9,360 continuous hourly observations from August 1, 2025 to August 28, 2026.
+The dataset contains 9,360 continuous hourly observations from August 1, 2025 to August 28, 2026 for Karachi (Mean AQI: 82.77, Median: 77.00, Min: 38, Max: 208, Std: 20.72).
 
 ### 3.1 AQI Category Distribution
-Karachi experiences high baseline pollution levels. The historical distribution of US EPA air quality categories across the dataset is shown below:
+The dataset distribution across US EPA air quality index categories:
 
 ![AQI Distribution](plots/eda_aqi_distribution.png)
 
-* **Moderate (51-100 AQI)**: Represents the baseline condition across most months.
-* **Unhealthy for Sensitive Groups (101-150 AQI)** and **Unhealthy (151-200 AQI)**: Concentrated primarily during low-wind winter periods.
+* **Moderate (51-100 AQI)**: Dominates the dataset with **7,820 hours (83.55%)**, representing Karachi's standard baseline air quality.
+* **Unhealthy for Sensitive Groups (101-150 AQI)**: Accounts for **1,348 hours (14.40%)**, occurring primarily during stagnant weather windows.
+* **Unhealthy (151-200 AQI)**: Occurs across **105 hours (1.12%)**, concentrated in winter thermal inversion events.
+* **Good (0-50 AQI)**: Very rare for Karachi, accounting for only **79 hours (0.84%)**, occurring strictly during peak monsoon rainfall washouts.
+* **Very Unhealthy (201-300 AQI)**: Recorded **8 hours (0.09%)**, with a dataset maximum of 208 AQI.
 
 ### 3.2 Feature Correlation Analysis
-Pearson correlation analysis across criteria pollutants and meteorological drivers:
+Pearson correlation coefficients ($r$) calculated across criteria pollutants and meteorological features with `us_aqi`:
 
 ![Correlation Heatmap](plots/eda_correlation_heatmap.png)
 
-* **Particulate Matter (PM2.5 and PM10)**: Strongest correlation with US AQI (r = 0.97), indicating PM2.5 is the primary driving pollutant.
-* **Wind Vector v (North-South)**: Negative correlation with pollution levels. Positive v (southerly winds from the Arabian Sea) brings clean marine air, reducing AQI.
-* **Temperature and Humidity**: Temperature-humidity interaction accelerates secondary particulate swelling and smog formation.
+* **PM2.5 ($r = +0.72$)**: Strongest single driver of the AQI index, followed by secondary combustion indicators Carbon Monoxide ($r = +0.40$) and Nitrogen Dioxide ($r = +0.39$).
+* **Relative Humidity ($r = -0.39$)**: Negative correlation with AQI; higher maritime humidity in Karachi coincides with clean onshore sea breezes.
+* **Wind Vector v ($r = -0.30$) & Wind Speed ($r = -0.24$)**: Negative correlation. Positive $v$ (southerly wind component blowing from the Arabian Sea) acts as a natural ventilation mechanism that disperses urban pollutants.
+* **Surface Pressure ($r = +0.33$)**: Positive correlation; high barometric pressure stabilizes the lower troposphere and traps surface particulates.
+* **PM10 ($r = +0.25$) & Ozone ($r = +0.36$)**: Secondary criteria pollutants contributing to the aggregate index.
 
 ### 3.3 Diurnal (24-Hour) Cycle
-Pollution in Karachi follows a distinct daily pattern:
+Hourly aggregation across all 9,360 hours shows a distinct daily pattern with a 5.77-point diurnal amplitude:
 
 ![Diurnal Cycle](plots/eda_diurnal_cycle.png)
 
-* **Night and Early Morning (00:00 - 06:00)**: AQI peaks due to nocturnal boundary layer compression trapping ground emissions.
-* **Afternoon (12:00 - 16:00)**: AQI drops as solar heating drives convective atmospheric mixing and sea breezes disperse surface particulates.
+* **Midday Minimum (08:00 - 14:00)**: AQI reaches its lowest daily plateau (lowest mean: **81.36 AQI at 09:00**, median: 77.00) due to daytime solar heating driving vertical convective mixing and daytime sea breeze onset.
+* **Evening Rush Hour Peak (17:00 - 21:00)**: AQI climbs sharply from 16:00 (82.51) to reach a peak at **19:00 (Mean: 87.13 AQI, Std: 26.09)** and **20:00 (Mean: 87.06 AQI, Std: 26.50)**, driven by heavy evening vehicular traffic combined with sunset boundary layer cooling and reduced surface wind speeds.
+* **Nighttime Plateau (22:00 - 05:00)**: AQI gradually decays from 84.84 to ~81.50 through early morning as traffic clears.
 
 ### 3.4 Seasonal Trends
-Monthly variation shows substantial seasonal oscillation:
+Monthly mean aggregation shows a substantial seasonal swing of 23.31 AQI points:
 
 ![Seasonal Trends](plots/eda_seasonal_trends.png)
 
-* **Monsoon / Summer (June - August)**: Lowest AQI due to strong sea breezes and precipitation scavenging.
-* **Winter (November - February)**: Highest AQI due to dry continental winds and thermal inversions.
+* **Winter Peak Pollution (October - February)**:
+  * **November 2025**: Most polluted month (Mean: **96.05 AQI**, Median: 92.00, Std: 24.69).
+  * **December 2025**: Mean: **95.10 AQI** (Dataset max standard deviation of 31.11).
+  * **January 2026**: Mean: **93.92 AQI**.
+  * **October 2025 & February 2026**: Mean: **91.49 AQI** and **91.37 AQI** respectively.
+  * *Cause*: Winter continental winds from the north/northeast blow dry inland dust over Karachi while surface temperature inversions trap vehicular and industrial exhaust near ground level.
+* **Monsoon / Summer Clean Period (March - September)**:
+  * **September 2025**: Cleanest recorded month (Mean: **72.74 AQI**, Std: 13.85).
+  * **August 2026 & August 2025**: Mean: **73.92 AQI** and **76.42 AQI** respectively.
+  * **March - June**: Stable baseline between **75.10 and 77.61 AQI**.
+  * *Cause*: Active Arabian Sea marine breeze circulation and summer monsoon precipitation scavenging disperse airborne particulates.
 
 ---
 
