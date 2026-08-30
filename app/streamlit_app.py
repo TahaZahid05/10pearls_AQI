@@ -50,7 +50,7 @@ def load_live_data():
     return df_raw, df_features
 
 
-@st.cache_resource
+@st.cache_resource(ttl=900)
 def load_model_bundle():
     try:
         if hasattr(st, "secrets") and "DAGSHUB_USER_TOKEN" in st.secrets:
