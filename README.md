@@ -178,18 +178,19 @@ The system is fully automated using GitHub Actions workflows:
 * **Trigger**: Scheduled hourly (`cron: '0 * * * *'`) and manual dispatch (`workflow_dispatch`).
 * **Tasks**:
   1. Sets up Python 3.11 environment.
-  2. Executes `python -m src.backfill` to fetch latest observations from Open-Meteo.
-  3. Computes updated rolling baselines and feature vectors.
-  4. Automatically commits updated [`data/historical_features.parquet`](data/historical_features.parquet) back to the repository using `github-actions[bot]`.
+  2. Executes `python -m src.backfill` to fetch the recent 7-day real-time rolling window from Open-Meteo.
+  3. Computes updated rolling baselines, wind vectors, and feature matrices.
+  4. Automatically commits and pushes updated [`data/historical_features.parquet`](data/historical_features.parquet) back to the repository using `github-actions[bot]`.
 
 ### 7.2 Daily Training & Registry Pipeline ([`.github/workflows/training_pipeline.yml`](.github/workflows/training_pipeline.yml))
 * **Trigger**: Scheduled daily at 00:00 UTC (`cron: '0 0 * * *'`) and manual dispatch (`workflow_dispatch`).
 * **Tasks**:
   1. Checks out repository and installs dependencies.
   2. Authenticates with DagsHub MLflow via `DAGSHUB_USER_TOKEN` secret.
-  3. Executes `python -m src.train` to train and evaluate all 4 model families.
+  3. Executes `python -m src.train` to train and evaluate all 4 model families on chronological splits.
   4. Logs metrics, parameters, and SHAP plots to DagsHub MLflow tracking.
   5. Registers the winning LightGBM model version into DagsHub Model Registry (`AQI_Predictor_Model`).
+  6. Automatically commits and pushes updated `models/best_model.pkl` and `plots/shap_summary.png` to GitHub to keep repository artifacts in sync.
 
 ---
 
@@ -197,7 +198,7 @@ The system is fully automated using GitHub Actions workflows:
 
 The interactive web dashboard ([`app/streamlit_app.py`](app/streamlit_app.py)) is deployed live at **[https://karachi-aqi-forecast-taha.streamlit.app/](https://karachi-aqi-forecast-taha.streamlit.app/)**:
 
-* **Dynamic Model Loading**: Connects to DagsHub Model Registry over HTTPS to pull the latest production model version (`v5`) on startup, with local fallback.
+* **Dynamic Model Loading**: Connects to DagsHub Model Registry over HTTPS to pull the latest active production model version (e.g. `v8`, `v9`...) on startup and periodic cache refresh, with local fallback.
 * **Real-time Observations**: Queries Open-Meteo on-demand (with 30-minute caching) to display current Karachi AQI and weather parameters.
 * **3-Day Forecast Cards**: Displays predicted AQI for Day 1 (+24h), Day 2 (+48h), and Day 3 (+72h) with EPA color-coded badges.
 * **Automated Health Alerts**: Triggers warning banners when forecasted AQI exceeds 100 (*Sensitive Groups*) or 150 (*Unhealthy*).
