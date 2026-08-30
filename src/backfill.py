@@ -51,5 +51,33 @@ def run_backfill(
     return df_features
 
 
+def update_features_incremental() -> pd.DataFrame:
+    print(f"Fetching recent real-time observations for {CITY_NAME}...")
+    df_recent_raw = fetch_combined_data(
+        latitude=LATITUDE,
+        longitude=LONGITUDE,
+        past_days=7,
+        forecast_days=1,
+    )
+    df_recent_features = engineer_features(df_recent_raw, is_training=True)
+
+    if HISTORICAL_PARQUET.exists():
+        df_hist = pd.read_parquet(HISTORICAL_PARQUET)
+        prev_count = len(df_hist)
+        df_combined = pd.concat([df_hist, df_recent_features], ignore_index=True)
+        df_combined = df_combined.drop_duplicates(subset=["time"], keep="last")
+        df_combined = df_combined.sort_values("time").reset_index(drop=True)
+        print(f"Merged features: {prev_count} -> {len(df_combined)} rows (+{len(df_combined) - prev_count} new)")
+    else:
+        df_combined = df_recent_features
+
+    df_combined.to_parquet(HISTORICAL_PARQUET, index=False)
+    print(f"Saved updated dataset to {HISTORICAL_PARQUET}")
+    return df_combined
+
+
 if __name__ == "__main__":
-    run_backfill()
+    if HISTORICAL_PARQUET.exists():
+        update_features_incremental()
+    else:
+        run_backfill()
